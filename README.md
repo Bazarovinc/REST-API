@@ -41,7 +41,7 @@ Copy adress, that will be writen after message: "Starting development server at"
 ```
 ### To delete user
 * Make DELETE-request on http://127.0.0.1:8000/api/users/id, where id - int, id of user.
-### To find K users in M killimetres around point with koordinates (x, y)
+### To find K users in M killimetres around point with coordinates (x, y)
 * Make GET-request on http://127.0.0.1:8000/api/search, with message like this:
 ```
 {
