@@ -19,24 +19,18 @@ Copy adress, that will be writen after message: "Starting development server at"
 * Make POST-request on http://127.0.0.1:8000/api/users, with next message:
 ```
 {
-    "user":
-        {
-            "name": "Nikita",
-            "x": 1,
-            "y": 1,
-            "description": "First user"
-        }
+    "name": "Nikita",
+    "x": 0,
+    "y": 0,
+    "description": "Some text about user"
 }
 ```
 ### To change some info of user
 * Make PUT-request on http://127.0.0.1:8000/api/users/id, where id - int, id of user, with some messgae like this:
 ```
 {
-    "user":
-        {
-            "x": 5,
-            "y": 3,
-        }
+    "x": 0,
+    "y": 0
 }
 ```
 ### To delete user
@@ -45,12 +39,9 @@ Copy adress, that will be writen after message: "Starting development server at"
 * Make GET-request on http://127.0.0.1:8000/api/search, with message like this:
 ```
 {
-    "search":
-    {
-        "x": 0,
-        "y": 0,
-        "k": 5,
-        "m": 10
-    }
+    "x": 0,
+    "y": 0,
+    "k": 3,
+    "m": 7
 }
 ```
