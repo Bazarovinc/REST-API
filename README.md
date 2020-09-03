@@ -14,9 +14,9 @@ Copy adress, that will be wruten after message: "Starting development server at"
 ### To get info about all users
 * Make GET-request on http://127.0.0.1:8000/api/users
 ### To get info about one user
-* Make GET-request on http://127.0.0.1:8000/api/users/id where id - int, id of user
+* Make GET-request on http://127.0.0.1:8000/api/users/id, where id - int, id of user
 ### To create new user
-* Make POST-request on http://127.0.0.1:8000/api/users with next message:
+* Make POST-request on http://127.0.0.1:8000/api/users, with next message:
 ```
 {
     "user":
@@ -29,7 +29,7 @@ Copy adress, that will be wruten after message: "Starting development server at"
 }
 ```
 ### To change some info of user
-* Make PUT-request on http://127.0.0.1:8000/api/users/id where id - int, id of user, with some messgae like this:
+* Make PUT-request on http://127.0.0.1:8000/api/users/id, where id - int, id of user, with some messgae like this:
 ```
 {
     "user":
@@ -39,3 +39,16 @@ Copy adress, that will be wruten after message: "Starting development server at"
         }
 }
 ```
+### To delete user
+* Make DELETE-request on http://127.0.0.1:8000/api/users/id, where id - int, id of user.
+### To find K users in M killimetres around point with koordinates (x, y)
+* Make GET-request on http://127.0.0.1:8000/api/search, with message like this:
+```
+{
+    "search":{
+        "x": 0,
+        "y": 0,
+        "k": 5,
+        "m": 10
+    }
+}```
