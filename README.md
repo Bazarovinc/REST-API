@@ -45,7 +45,8 @@ Copy adress, that will be wruten after message: "Starting development server at"
 * Make GET-request on http://127.0.0.1:8000/api/search, with message like this:
 ```
 {
-    "search":{
+    "search":
+    {
         "x": 0,
         "y": 0,
         "k": 5,
