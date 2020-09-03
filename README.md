@@ -8,7 +8,7 @@ Then just run server:
 ```
 $>python manage.py runserver
 ```
-Copy adress, that will be wruten after message: "Starting development server at", how it looks on the picture.
+Copy adress, that will be writen after message: "Starting development server at".
 <img align="center" src="https://github.com/Bazarovinc/REST-API/blob/master/imagies/example.jpg" width="100%" />
 ## How to use API
 ### To get info about all users
