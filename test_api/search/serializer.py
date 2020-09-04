@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, SearchPoint
+from .models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -9,8 +9,9 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ("__all__")
 
 
-class SearchUsersSerializer(serializers.ModelSerializer):
+class SearchUsersSerializer(serializers.Serializer):
+    x = serializers.IntegerField()
+    y = serializers.IntegerField()
+    k = serializers.IntegerField(min_value=1)
+    m = serializers.IntegerField(min_value=0)
 
-    class Meta:
-        model = SearchPoint
-        fields = '__all__'

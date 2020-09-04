@@ -9,10 +9,3 @@ class User(models.Model):
 
     def __str__(self):
         return f"{self.name}: ({self.x}, {self.y})"
-
-
-class SearchPoint(models.Model):
-    x = models.IntegerField()
-    y = models.IntegerField()
-    k = models.IntegerField()
-    m = models.IntegerField()

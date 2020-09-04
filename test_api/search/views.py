@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import User
 from .serializer import UserSerializer, SearchUsersSerializer
+import sqlite3
 
 
 class UserView(APIView):
@@ -16,6 +17,7 @@ class UserView(APIView):
             return Response({'user': serializer.data})
         else:
             users = User.objects.all()
+            print(users)
             serializer = UserSerializer(users, many=True)
             return Response({'users': serializer.data})
 
@@ -45,11 +47,25 @@ class SearchUserView(APIView):
         serializer = SearchUsersSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             searching = serializer.data
-            users = User.objects.filter(x__lte=(searching["x"] + searching["m"]),
-                                        y__lte=(searching['y'] + searching["m"]))
-            serializer_users = UserSerializer(users, many=True)
-            if len(serializer_users.data) != 0:
-                return Response({'users': serializer_users.data[:searching["k"]]})
+            conn = sqlite3.connect('db.sqlite3')
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM search_user WHERE"
+                        f"(x <= ({searching['x']} + {searching['m']}) AND y <= ({searching['y']} + {searching['m']}))"
+                        "AND"
+                        f"(x >= ({searching['x']} - {searching['m']}) AND y <= ({searching['y']} + {searching['m']}))"
+                        "AND"
+                        f"(x >= ({searching['x']} - {searching['m']}) AND y >= ({searching['y']} - {searching['m']}))"
+                        "AND"
+                        f"(x <= ({searching['x']} + {searching['m']}) AND y >= ({searching['y']} - {searching['m']}))"
+                        "ORDER BY x, y")
+            users_bad_type = cur.fetchall()
+            conn.commit()
+            users = []
+            if len(users_bad_type) != 0:
+                for user in users_bad_type[:searching['k']]:
+                    d = {"id": user[0], "name": user[1], "x": user[2], "y": user[3], "description": user[4]}
+                    users.append(d)
+                return Response({'users': users})
             else:
                 return Response({'message': "No one user was found."}, status=200)
 
