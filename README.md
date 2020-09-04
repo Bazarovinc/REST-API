@@ -1,4 +1,4 @@
-# REST-API
+# RESTful API
 ## How to start server
 When you clone repo. Change directory for test_api:
 ```
