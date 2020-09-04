@@ -17,7 +17,6 @@ class UserView(APIView):
             return Response({'user': serializer.data})
         else:
             users = User.objects.all()
-            print(users)
             serializer = UserSerializer(users, many=True)
             return Response({'users': serializer.data})
 
