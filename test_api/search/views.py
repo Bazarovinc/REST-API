@@ -3,9 +3,10 @@ from django.db.models import Q
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import User
-from .serializer import UserSerializer, SearchUsersSerializer
+from search.models import User
+from search.serializer import UserSerializer, SearchUsersSerializer
 import sqlite3
+import search.service as s
 
 
 class UserView(APIView):
@@ -46,25 +47,27 @@ class SearchUserView(APIView):
         serializer = SearchUsersSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             searching = serializer.data
+            x0, y0, k, m = searching['x'], searching['y'], searching['k'], searching['m']
             conn = sqlite3.connect('db.sqlite3')
             cur = conn.cursor()
             cur.execute("SELECT * FROM search_user WHERE"
-                        f"(x <= ({searching['x']} + {searching['m']}) AND y <= ({searching['y']} + {searching['m']}))"
+                        f"(x <= ({x0} + {m}) AND y <= ({y0} + {m}))"
                         "AND"
-                        f"(x >= ({searching['x']} - {searching['m']}) AND y <= ({searching['y']} + {searching['m']}))"
+                        f"(x >= ({x0} - {m}) AND y <= ({y0} + {m}))"
                         "AND"
-                        f"(x >= ({searching['x']} - {searching['m']}) AND y >= ({searching['y']} - {searching['m']}))"
+                        f"(x >= ({x0} - {m}) AND y >= ({y0} - {m}))"
                         "AND"
-                        f"(x <= ({searching['x']} + {searching['m']}) AND y >= ({searching['y']} - {searching['m']}))"
+                        f"(x <= ({x0} + {m}) AND y >= ({y0} - {m}))"
                         "ORDER BY x, y")
             users_bad_type = cur.fetchall()
             conn.commit()
             users = []
             if len(users_bad_type) != 0:
-                for user in users_bad_type[:searching['k']]:
-                    d = {"id": user[0], "name": user[1], "x": user[2], "y": user[3], "description": user[4]}
-                    users.append(d)
-                return Response({'users': users})
+                for user in users_bad_type:
+                    if s.condition(x0, y0, user[2], user[3], m):
+                        d = {"id": user[0], "name": user[1], "x": user[2], "y": user[3], "description": user[4]}
+                        users.append(d)
+                return Response({'users': users[:k]})
             else:
                 return Response({'message': "No one user was found."}, status=200)
 
