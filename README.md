@@ -45,3 +45,7 @@ Copy adress, that will be writen after message: "Starting development server at"
     "m": 7
 }
 ```
+## How to test
+```
+$>python manage.py test
+```
