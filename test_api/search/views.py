@@ -3,71 +3,44 @@ from django.db.models import Q
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from search.models import User
-from search.serializer import UserSerializer, SearchUsersSerializer
+from search.models import Notes
+from search.serializer import NoteSerializer
+from search.configurations import N
 import sqlite3
-import search.service as s
 
 
-class UserView(APIView):
+class NotesView(APIView):
 
     def get(self, request, pk=0):
         if pk != 0:
-            user = get_object_or_404(User.objects.all(), pk=pk)
-            serializer = UserSerializer(user)
-            return Response({'user': serializer.data})
+            note = get_object_or_404(Notes.objects.all(), pk=pk)
+            serializer = NoteSerializer(note)
+            return Response(serializer.data)
         else:
-            users = User.objects.all()
-            serializer = UserSerializer(users, many=True)
-            return Response({'users': serializer.data})
+            query = request.GET.get("query", "")
+            if query != '':
+                notes = Notes.objects.filter(Q(content__contains=str(query))
+                                            | Q(content__contains=str(query)))
+            else:
+                notes = Notes.objects.all()
+            serializer = NoteSerializer(notes, many=True)
+            return Response(serializer.data)
 
     def post(self, request):
-        serializer = UserSerializer(data=request.data)
+        serializer = NoteSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            user_saved = serializer.save()
-        return Response({"succes": f"User {user_saved.name} created"}, status=201)
+            note_saved = serializer.save()
+        return Response(serializer.data, status=201)
 
     def put(self, request, pk):
-        saved_user = get_object_or_404(User.objects.all(), pk=pk)
-        serializer = UserSerializer(instance=saved_user, data=request.data, partial=True)
+        saved_user = get_object_or_404(Notes.objects.all(), pk=pk)
+        serializer = NoteSerializer(instance=saved_user, data=request.data, partial=True)
         if serializer.is_valid(raise_exception=True):
-            user_saved = serializer.save()
-        return Response({"success": f"User '{user_saved.name}' updated successfully"})
+            note_saved = serializer.save()
+        return Response({"success": "Note was successfully updated "})
 
     def delete(self, request, pk):
         # Get object with this pk
-        user = get_object_or_404(User.objects.all(), pk=pk)
-        user.delete()
-        return Response({"message": f"User with id {pk} has been deleted."}, status=204)
-
-
-class SearchUserView(APIView):
-
-    def get(self, request):
-        serializer = SearchUsersSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            searching = serializer.data
-            x0, y0, k, m = searching['x'], searching['y'], searching['k'], searching['m']
-            conn = sqlite3.connect('db.sqlite3')
-            cur = conn.cursor()
-            cur.execute("SELECT * FROM search_user WHERE"
-                        f"(x <= ({x0} + {m}) AND y <= ({y0} + {m}))"
-                        "AND"
-                        f"(x >= ({x0} - {m}) AND y <= ({y0} + {m}))"
-                        "AND"
-                        f"(x >= ({x0} - {m}) AND y >= ({y0} - {m}))"
-                        "AND"
-                        f"(x <= ({x0} + {m}) AND y >= ({y0} - {m}))"
-                        "ORDER BY x, y")
-            users_bad_type = cur.fetchall()
-            conn.commit()
-            users = []
-            if len(users_bad_type) != 0:
-                for user in users_bad_type:
-                    if s.condition(x0, y0, user[2], user[3], m):
-                        d = {"id": user[0], "name": user[1], "x": user[2], "y": user[3], "description": user[4]}
-                        users.append(d)
-                return Response({'users': users[:k]})
-            else:
-                return Response({'message': "No one user was found."}, status=200)
-
+        note = get_object_or_404(Notes.objects.all(), pk=pk)
+        note.delete()
+        return Response({"message": f"Note with id {pk} has been deleted."}, status=204)

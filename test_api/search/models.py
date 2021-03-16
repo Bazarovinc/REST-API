@@ -1,11 +1,12 @@
 from django.db import models
+from search.configurations import N
 
 
-class User(models.Model):
-    name = models.CharField(max_length=50)
-    x = models.IntegerField()
-    y = models.IntegerField()
-    description = models.CharField(max_length=255, null=True)
+class Notes(models.Model):
+    id = models.AutoField(primary_key=True)
+    title = models.CharField(max_length=255, blank=True)
+    content = models.CharField(max_length=1000)
 
     def __str__(self):
-        return f"{self.name}: ({self.x}, {self.y})"
+        return f'"id": {self.id}, "title": "{self.title}", “content”: “{self.content}”'
+
